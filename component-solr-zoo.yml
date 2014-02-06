@@ -50,7 +50,7 @@ application:
     tomcat:
       type: reference.Submodule
       configuration:
-        __locator.application-id: "tomcat"
+        __locator.application-id: "Application Server"
       interfaces:
         input:
           app-port: configuration(string)
@@ -67,7 +67,7 @@ application:
     zookeeper:
       type: reference.Submodule
       configuration:
-        __locator.application-id: "zoo-cloud"
+        __locator.application-id: "Zookeeper"
       interfaces:
         input:
           exhibitor-port: configuration(string)
