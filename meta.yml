@@ -1,13 +1,13 @@
 kit:
   name: "Solr Cloud"
-  link: https://github.com/loky9000/component-solr-dev 
+  link: https://github.com/qubell-bazaar/component-solr-dev 
   applications:
     - name: "Solr Cloud"
-      manifest: https://raw.github.com/loky9000/component-solr-dev/master/component-solr-dev.yml
+      manifest: https://raw.github.com/qubell-bazaar/component-solr-dev/master/component-solr-dev.yml
     - name: "Application Server"
       manifest: https://raw.github.com/qubell-bazaar/component-tomcat-dev/0.2.1/component-tomcat-dev.yml
     - name: "Zookeeper"
-      manifest: https://raw.github.com/loky9000/component-zookeeper-dev/master/component-zookeeper-dev.yml 
+      manifest: https://raw.github.com/qubell-bazaar/component-zookeeper-dev/master/component-zookeeper-dev.yml 
   provider:
     name: "Qubell"
     link: http://qubell.com
@@ -15,5 +15,5 @@ kit:
     overview: |
       This application requires the following items to be configured in your environment:
         * Amazon EC2 or Rackspace CloudServers account;
-        * Ports 2181, 3888 and 8090 open on the ﬁrewall.
+        * Ports 2181, 3888, 8090, 8080 open on the ﬁrewall.
       Please refer to the Getting Started for step-by-step instructions on how to configure your environment.

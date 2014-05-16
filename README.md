@@ -12,10 +12,10 @@ Configurations
 [![Build Status](https://travis-ci.org/qubell-bazaar/component-solr-dev.png?branch=master)](https://travis-ci.org/qubell-bazaar/component-solr-dev)
 
  - Solr 4.x (latest), Amazon Linux (us-east-1/ami-1ba18d72), AWS EC2 m1.small, ec2-user
- - Solr 4.x (latest), CentOS 6.4 (us-east-1/ami-eb6b0182), AWS EC2 m1.small, root
+ - Solr 4.x (latest), CentOS 6.4 (us-east-1/ami-bf5021d6), AWS EC2 m1.small, root
      NB:  Non stable  work on Centos (Will be fixed in the next version) 
- - Solr 4.x (latest), Ubuntu 12.04 (us-east-1/ami-d0f89fb9), AWS EC2 m1.small, ubuntu
- - Solr 4.x (latest), Ubuntu 10.04 (us-east-1/ami-0fac7566), AWS EC2 m1.small, ubuntu
+ - Solr 4.x (latest), Ubuntu 12.04 (us-east-1/ami-967edcff), AWS EC2 m1.small, ubuntu
+ - Solr 4.x (latest), Ubuntu 10.04 (us-east-1/ami-9f3906f6), AWS EC2 m1.small, ubuntu
 
 Pre-requisites
 --------------
