@@ -7,7 +7,7 @@ kit:
     - name: "Application Server"
       manifest: https://raw.github.com/qubell-bazaar/component-tomcat-dev/0.2.1/component-tomcat-dev.yml
     - name: "Zookeeper"
-      manifest: https://raw.github.com/qubell-bazaar/component-zookeeper-dev/master/component-zookeeper-dev.yml 
+      manifest: https://raw.github.com/qubell-bazaar/component-zookeeper-dev/0.1.0/component-zookeeper-dev.yml 
   provider:
     name: "Qubell"
     link: http://qubell.com
