@@ -7,7 +7,7 @@ cookbook 'cookbook-qubell-zookeeper', git: "https://github.com/qubell-bazaar/coo
 cookbook 'cookbook-qubell-solr', git: "https://github.com/qubell-bazaar/cookbook-qubell-solr.git"
 
 ##Added for zookeeper
-cookbook 'zookeeper', git:"https://github.com/SimpleFinance/chef-zookeeper.git", ref: "282cec762327da1e219c80bc6b378ea933bdb969"
+cookbook 'zookeeper', git: 'https://github.com/SimpleFinance/chef-zookeeper.git', ref: '282cec762327da1e219c80bc6b378ea933bdb969'
 cookbook 'build-essential', '= 1.4.4'
 ###Added for tomcat
 cookbook 'yum', git: "https://github.com/opscode-cookbooks/yum.git", ref: "76dea86a6c849a46be00086c7403d7821c1d3730"
