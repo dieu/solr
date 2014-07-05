@@ -9,7 +9,7 @@ Attributes
 
 Configurations
 --------------
-[![Build Status](https://travis-ci.org/qubell-bazaar/component-solr-dev.png?branch=master)](https://travis-ci.org/qubell-bazaar/component-solr-dev)
+[![Build Status](http://jenkins.dev.qubell.com:8080/buildStatus/icon?job=component-solr-upstream)](http://jenkins.dev.qubell.com:8080/job/component-solr-dev/)
 
  - Solr 4.x (latest), Amazon Linux (us-east-1/ami-1ba18d72), AWS EC2 m1.small, ec2-user
  - Solr 4.x (latest), CentOS 6.4 (us-east-1/ami-bf5021d6), AWS EC2 m1.small, root
