@@ -55,6 +55,10 @@ class SolrDevTestCase(BaseComponentTestCase):
         "launch": False 
   }]
 
+    @classmethod
+    def timeout(cls):
+        return 30
+   
     @instance(byApplication=name)
     def test_zoo_ui(self, instance):
         hosts = instance.returnValues['nodes.zoo-ui']
