@@ -1,21 +1,29 @@
+#### Solr Cloud wit Zookeeper ensemble ####
+###### Input Configuration parameters. In this section you can set input configuration parameters which you will beable to change later in reconfiguration########
 application:
   configuration:
-    input.solr-version: "4.6.0"
-    input.solr-collections: ["testone"]
-    input.solr-shards-num: "2"
-    input.solr-loglevel: "FINE"
+    input.solr-version: "4.6.0" ### Solr dist version
+    input.solr-collections: ["testone"] ### Solr collections array. Can contain urls to collections archive 
+    input.solr-shards-num: "2" ### Shard numbers
+    input.solr-loglevel: "FINE" ### Solr log level
     input.solr-zookeeper-loglevel: "INFO"
-    input.app-port: "8080"
-    input.exhibitor-port: "8090"
-    input.solr-quantity: "4"
-    input.zookeeper-quantity: "3"
+    input.app-port: 8080 ### Solr port
+    input.exhibitor-port: 8090 ### Exhibitor ui port
+    input.solr-quantity: "4" ### Solr hosts numbers. 4 hosts used for 2-shard configration
+    input.zookeeper-quantity: "3" ### Zookkeper hosts quantity
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-b8c092f.tar.gz" 
-    input.image: "us-east-1/ami-1ba18d72"
-    input.identity: "ec2-user"
-    input.instance-size: "m1.small"
+    input.operation-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### image/identity pair for describing Operating system for the instance
+    input.instance-size: "m1.small" ### EC2 instance type 
+
+####### Binding section. Here we are bind main.workflow component on sumbmodules.This is a component binding section it mean interfaces in components  [solr, tomcat] [solr, zookeeper]  will be connected by pin names indeferrent to interface name   
+  bindings:
+    - [solr, tomcat]
+    - [solr, zookeeper]
+
+####### Root Application Interfaces. Here we describe a interfaces with pins  and their bindings on  components interfaces.
 
   interfaces:
-    input:
+    input:  ###Input values .That values can be changed after application launch.
       #solr inputs
       solr-version: "bind(solr#input.solr-version)"
       solr-collections: "bind(solr#input.solr-collections)"
@@ -23,44 +31,67 @@ application:
       solr-loglevel: "bind(solr#input.solr-loglevel)"
       solr-zookeeper-loglevel: "bind(solr#input.solr-zookeeper-loglevel)"
       #tomcat inputs
-      app-port: "bind(tomcat#input.app-port, solr#input.solr-port)"
+      app-port: "bind(tomcat#input.app-port)"
       solr-quantity: "bind(tomcat#input.quantity)"
       recipe-url: "bind(solr#input.recipe-url)"
-      image: "bind(tomcat#input.image)"
-      identity: "bind(tomcat#input.identity, solr#input.identity)"
+      operation-system: "bind(tomcat#input.operation-system, solr#input.operation-system)"
       instance-size: "bind(tomcat#input.instance-size)"
       #zookeeper inputs
       exhibitor-port: "bind(zookeeper#input.exhibitor-port)"
       zookeeper-quantity: "bind(zookeeper#input.zookeeper-quantity)"
-    endpoints:
+    solr-zoo: ### combined interface for actions/output pins
       solr-node: "bind(solr#result.solr-node)"
       solr-url: "bind(solr#result.solr-url)"
-    nodes:
-      solr-hosts: "bind(tomcat#output.app-hosts)"
-      solr-port: "bind(tomcat#output.app-port)"
+      solr-hosts: "bind(tomcat#tomcat.app-hosts)"
+      solr-port: "bind(tomcat#tomcat.app-port)"
       solr-zoo-nodes: "bind(solr#result.solr-zoo-nodes)"
-      zoo-ui: "bind(zookeeper#output.zoo-ui)"
+      zoo-ui: "bind(zookeeper#zoo.zoo-ui)"
+
+####### Components definitions ########
 
   components:
+### Solr Cloud contain main component called 'solr' and two subcomponents 'tomcat' and 'zookeeper'
     tomcat:
-      type: reference.Submodule
+      type: reference.Submodule 
       configuration:
         __locator.application-id: "Application Server"
       interfaces:
         input:
-          app-port: configuration(string)
-          quantity: configuration(string)
-          image: configuration(string)
-          identity: configuration(string)
-          instance-size: configuration(string)
-        management:
-          reconfigure: receive-command(string java-opts)
-          deploy-libs: receive-command(list<string> lib-uri)
-          deploy-war: receive-command(string uri, string path, object context-attrs, object context-nodes)
-          manage-service: receive-command(string service-action)
-        output:
-          app-hosts: publish-signal(list<string>)
-          app-port: publish-signal(string)
+          operation-system:
+             type: configuration(map<string,object>)
+             suggestions:
+                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
+                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
+                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
+                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
+          app-port:
+             type: configuration(int)
+             name: Tomcat listen port
+          quantity:
+             type: configuration(string)
+             name: Appliction hosts quantity
+          instance-size:
+             type: configuration(string)
+             name: VM size m1.small for example
+        tomcat:
+          reconfigure: 
+             type: receive-command(string java-opts)
+             name: restart Tomcat with new JAVA_OPTS
+          deploy-libs:
+             type: receive-command(list<string> lib-uri)
+             name: Lib deployment action
+          deploy-war:
+             type: receive-command(string uri, string path, object context-attrs, object context-nodes)
+             name: Deploy war/jar action
+          manage-service:
+             type: receive-command(string service-action)
+             name: Manage Service action
+          app-hosts:
+             type: publish-signal(list<string>)
+             name: Application Hosts
+          app-port:
+             type: publish-signal(int)
+             name: Application port
 
     zookeeper:
       type: reference.Submodule
@@ -68,41 +99,83 @@ application:
         __locator.application-id: "Zookeeper"
       interfaces:
         input:
-          exhibitor-port: configuration(string)
-          zookeeper-quantity: configuration(string)
-        output:
-          zoo-nodes: publish-signal(list<string>)
-          zoo-ui: publish-signal(list<string>)
+          exhibitor-port:
+             type: configuration(int)
+             name: Exhibitor UI port 
+          zookeeper-quantity:
+             type: configuration(string)
+             name: Zookkeper hosts quantity
+        zoo:
+          zoo-nodes:
+             type: publish-signal(list<string>)
+             name: Zoo hosts Private IPs
+          zoo-ui:
+             type: publish-signal(list<string>)
+             name: Exhibitiors UI Urls
 
     solr:
-      type: workflow.Instance
+      type: workflow.Instance ### http://docs.qubell.com/developer/workflow-instance.html
       interfaces:
-        input:
-          identity: configuration(string)
-          solr-port: configuration(string)
-          solr-version: configuration(string)
-          solr-collections: configuration(list<string>)
-          solr-loglevel: configuration(string)
-          solr-zookeeper-loglevel: configuration(string)
-          solr-shards-num: configuration(string)
-          recipe-url: configuration(string)
-        app-nodes:
-          app-hosts: consume-signal(list<string>)
-          app-port: consume-signal(string)
+        input: #### Contain pins with type: configuration().
+          operation-system:
+             type: configuration(map<string,object>)
+             suggestions: ### Create dropdown menu in advanced launch
+                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
+                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
+                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
+                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
+          solr-version:
+             type: configuration(string)
+             name: Solr version
+          solr-collections:
+             type: configuration(list<string>)
+             name: Solr collections
+          solr-loglevel:
+             type: configuration(string)
+             name: Solr log level
+          solr-zookeeper-loglevel:
+             type: configuration(string)
+             name: Zookeeper log level
+          solr-shards-num:
+             type: configuration(string)
+             name: Solr shard numbers
+          recipe-url:
+             type: configuration(string)
+             name: Cookbooks url
         zoo:
-          zoo-nodes: consume-signal(list<string>)
-        tomcat-actions:
-          manage-service: send-command(string service-action)
-          reconfigure: send-command(string java-opts)
-          deploy-libs: send-command(list<string> lib-uri)
-          deploy-war: send-command(string uri, string path, object context-attrs, object context-nodes) 
+          zoo-nodes:
+             type: consume-signal(list<string>)
+             name: Zoo hosts Private IPs
+        tomcat:
+          app-hosts:
+             type: consume-signal(list<string>)
+             name: Application Hosts
+          app-port:
+             type: consume-signal(int)
+             name: Application port
+          manage-service:
+             type: send-command(string service-action)
+             name: Manage Service action
+          reconfigure:
+             type: send-command(string java-opts)
+             name: restart Tomcat with new JAVA_OPTS
+          deploy-libs:
+             type: send-command(list<string> lib-uri)
+             name: Lib deployment action
+          deploy-war:
+             type: send-command(string uri, string path, object context-attrs, object context-nodes)
+             name: Deploy war/jar action
         result:
-          solr-url: publish-signal(list<string>)
-          solr-node: publish-signal(list<string>)
-          solr-zoo-nodes: publish-signal(string)
-
-      required: [app-nodes, zoo, tomcat-actions]
-
+          solr-url:
+             type: publish-signal(list<string>)
+             name: Solr Urls
+          solr-node:
+             type: publish-signal(list<string>)
+             name: Solr Hosts
+          solr-zoo-nodes:
+             type: publish-signal(string)
+             name: Zookeper nodes
+      required: [zoo, tomcat]
       configuration:
         configuration.triggers:
           input.solr-collections: manage-collection
@@ -110,46 +183,33 @@ application:
         configuration.propagateStatus: [ manage-collection ]
         configuration.workflows:
           launch:
-            parameters:
-              - solr-port:
-                  description: Solr app port
-              - solr-version:
-                  description: Solr version
-              - solr-collections:
-                  description: Solr collection names
-              - solr-loglevel:
-                  description: Solr debug level
-              - solr-zookeeper-loglevel:
-                  description: Solr zookeeper debug level
-              - solr-shards-num:
-                  description: "Number os solr shards"
             steps:
-              - get-env-props:
+              - get-env-props: ### After getting signals on all required interfaces we want to used them later 
                   action: getEnvironmentProperties
                   phase: get-env-props
                   output:
                     props: result
-              - provision-node:
+              - provision-node: ### Here we using trick with provisioning on staticIps for getting App Server ips in default  role
                   action: provisionVms
                   phase: provision-node
                   precedingPhases: [ get-env-props ]
                   parameters:
                     roleName: default
                     hardwareId: ""
-                    vmIdentity: "{$.identity}"
+                    vmIdentity: "{$.operation-system.identity}"
                     retryCount: 0
-                    staticIps: "{$.props.app-nodes.app-hosts}"
-              - reconfigure-tomcat:
+                    staticIps: "{$.props.tomcat.app-hosts}"
+              - reconfigure-tomcat: ### Reconfiguring Tomcat with new JAVA_OPTS for Solr installation 
                   action: serviceCall
                   phase: reconfigure-tomcat
                   precedingPhases: [get-env-props]
                   parameters:
                     timeout: 600
-                    service: tomcat-actions
+                    service: tomcat
                     command: reconfigure
                     arguments:
                       java-opts: "$${{JAVA_OPTS}} -DnumShards={$.solr-shards-num} -Dlog4j.configuration=file:///opt/solr/webapps/log4j.properties"
-              - deploy-solr:
+              - deploy-solr: ### Run recipe for extract Solr war
                   action: "chefrun"
                   phase: deploy-solr
                   precedingPhases: [ reconfigure-tomcat ]
@@ -160,7 +220,7 @@ application:
                     recipeUrl: "{$.recipe-url}" 
                     jattrs:
                       cookbook-qubell-solr:
-                        port: "{$.solr-port}"
+                        port: "{$.props.tomcat.app-port}"
                         hostcontext: "solr"
                         version: "{$.solr-version}"
                         loglevel: "{$.solr-loglevel}"
@@ -168,7 +228,7 @@ application:
                           loglevel: "{$.solr-zookeeper-loglevel}"
                   output:
                     chefAttrs: chefState
-              - create-collections:
+              - create-collections: ### Create Solr collections in Zookeeper 
                   action: "chefrun"
                   phase: create-collections
                   precedingPhases: [ deploy-solr ]
@@ -180,30 +240,30 @@ application:
                     jattrs:
                       cookbook-qubell-solr:
                         version: "{$.solr-version}"
-                        port: "{$.solr-port}"
+                        port: "{$.props.tomcat.app-port}"
                         hostcontext: "solr"
                         collection: "{$.solr-collections}"
                         zookeeper:
                           hosts: "{$.props.zoo.zoo-nodes}"
                   output:
                      chefAttrs1: chefState
-              - deploy-libs:
+              - deploy-libs: ### Deploy libs required for application
                   action: serviceCall
                   phase: deploy-libs
                   precedingPhases: [ deploy-solr ]
                   parameters:
                     timeout: 600
-                    service: tomcat-actions
+                    service: tomcat
                     command: deploy-libs
                     arguments:
                       lib-uri: "{$.chefAttrs['*'][0]['cookbook-qubell-solr']['lib_uri']}"
-              - deploy-war:
+              - deploy-war: ### Deploy Solr war in Tomcat
                   action: serviceCall
                   phase: deploy-war
                   precedingPhases: [ deploy-libs ]
                   parameters:
                     timeout: 600
-                    service: tomcat-actions
+                    service: tomcat
                     command: deploy-war
                     arguments:
                       uri: "file://{$.chefAttrs['*'][0]['cookbook-qubell-solr']['war_uri']}"
@@ -223,25 +283,22 @@ application:
                             "override": "true"
                           }
 
-            return:
+            return: ### We want to see DemoSite and AdminPanel urls will be present on application dashboard
               solr-node:
-                value: "{$.props.app-nodes.app-hosts}"
+                value: "{$.props.tomcat.app-hosts}"
               solr-url:
-                value: "http://{$.props.app-nodes.app-hosts}:{$.props.app-nodes.app-port}/solr"
+                value: "http://{$.props.tomcat.app-hosts}:{$.props.tomcat.app-port}/solr"
               solr-zoo-nodes:
                 value: "{$.chefAttrs1['*'][0].['cookbook-qubell-solr']['zookeeper']['nodes']}"
 
-          manage-collection:
-            parameters:
-              - solr-collections:
-                  description: "Solr collection names"
+          manage-collection: ### Additional workflow for changing collections  
             steps:
               - stop-service-tomcat:
                   action: serviceCall
                   phase: stop-service-tomcat
                   parameters:
                     timeout: 600
-                    service: tomcat-actions
+                    service: tomcat
                     command: manage-service
                     arguments:
                       service-action: "stop"
@@ -266,7 +323,7 @@ application:
                     jattrs:
                       cookbook-qubell-solr:
                         version: "{$.solr-version}"
-                        port: "{$.solr-port}"
+                        port: "{$.props.tomcat.app-port}"
                         hostcontext: "solr"
                         collection: "{$.solr-collections}"
                         zookeeper:
@@ -277,14 +334,7 @@ application:
                   precedingPhases: ["create-collections"]
                   parameters:
                     timeout: 600
-                    service: tomcat-actions
+                    service: tomcat
                     command: manage-service
                     arguments:
                       service-action: "start"
-
-
-          destroy:
-            steps: []
-  bindings:
-    - [solr, tomcat]
-    - [solr, zookeeper]
