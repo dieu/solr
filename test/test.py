@@ -61,14 +61,14 @@ class SolrDevTestCase(BaseComponentTestCase):
    
     @instance(byApplication=name)
     def test_zoo_ui(self, instance):
-        hosts = instance.returnValues['nodes.zoo-ui']
+        hosts = instance.returnValues['solr-zoo.zoo-ui']
         for host in hosts:
            resp = requests.get(host, verify=False)
            assert resp.status_code == 200
     
     @instance(byApplication=name)
     def test_solr_hosts(self, instance):
-        hosts = instance.returnValues['endpoints.solr-url']
+        hosts = instance.returnValues['solr-zoo.solr-url']
         for host in hosts:
            resp = requests.get(host, verify=False)
            assert resp.status_code == 200 
