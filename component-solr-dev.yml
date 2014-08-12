@@ -11,7 +11,7 @@ application:
     input.exhibitor-port: 8090 ### Exhibitor ui port
     input.solr-quantity: "4" ### Solr hosts numbers. 4 hosts used for 2-shard configration
     input.zookeeper-quantity: "3" ### Zookkeper hosts quantity
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-b8c092f.tar.gz" 
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-3bdac22.tar.gz" 
     input.operation-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### image/identity pair for describing Operating system for the instance
     input.instance-size: "m1.small" ### EC2 instance type 
 
