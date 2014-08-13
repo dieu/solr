@@ -13,7 +13,7 @@ application:
     input.zookeeper-quantity: 3 ### Zookkeper hosts quantity
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-3bdac22.tar.gz" 
     input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### image/identity pair for describing Operating system for the instance
-    input.instance-size: "t2.small" ### EC2 instance type
+    input.instance-size: "m1.small" ### EC2 instance type
 
 # Binding section.
 # Here we are bind main.workflow component on sumbmodules.
