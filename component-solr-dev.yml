@@ -11,21 +11,27 @@ application:
     input.exhibitor-port: 8090 ### Exhibitor ui port
     input.solr-quantity: 4 ### Solr hosts numbers. 4 hosts used for 2-shard configration
     input.zookeeper-quantity: 3 ### Zookkeper hosts quantity
-    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-b031c84.tar.gz" 
+    input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-3bdac22.tar.gz" 
     input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### image/identity pair for describing Operating system for the instance
-    input.instance-size: "m1.small" ### EC2 instance type 
+    input.instance-size: "t2.small" ### EC2 instance type
 
-####### Binding section. Here we are bind main.workflow component on sumbmodules.This is a component binding section it mean interfaces in components  [solr, tomcat] [solr, zookeeper]  will be connected by pin names indeferrent to interface name   
+# Binding section.
+# Here we are bind main.workflow component on sumbmodules.
+# This is a component binding section it mean interfaces in components [main.workflow, app]
+# will be connected by pin names regardless of interface name
+
   bindings:
     - [solr, tomcat]
     - [solr, zookeeper]
 
-####### Root Application Interfaces. Here we describe a interfaces with pins  and their bindings on  components interfaces.
+# Application Interfaces binding section.
+# Here we describe a interfaces with pins  and their bindings on  component's  interfaces.
+# For binding using function bind(Component1#interface.pin, Component2#interface.pin)
 
   interfaces:
     input:  ###Input values .That values can be changed after application launch.
       #solr inputs
-      solr-version: "bind(solr#input.solr-version)"
+      solr-version: "bind(solr#input.solr-version)" ### For example  value input.solr-version mapped on input.solr-version in component solr
       solr-collections: "bind(solr#input.solr-collections)"
       solr-shards-num: "bind(solr#input.solr-shards-num)"
       solr-loglevel: "bind(solr#input.solr-loglevel)"
