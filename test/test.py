@@ -42,17 +42,10 @@ from qubell.api.private.testing import instance, environment, workflow, values
 })
 class SolrDevTestCase(BaseComponentTestCase):
     name = "component-solr-dev"
+    meta = "https://raw.githubusercontent.com/qubell-bazaar/component-solr-dev/master/meta.yml"
     apps = [{
         "name": name,
         "file": os.path.realpath(os.path.join(os.path.dirname(__file__), '../%s.yml' % name))
-     }, {
-        "name": "Application Server",
-        "url": "https://raw.github.com/qubell-bazaar/component-tomcat-dev/master/component-tomcat-dev.yml",
-        "launch": False
-     }, {
-        "name": "Zookeeper",
-        "url": "https://raw.github.com/qubell-bazaar/component-zookeeper-dev/master/component-zookeeper-dev.yml",
-        "launch": False 
   }]
 
     @classmethod
