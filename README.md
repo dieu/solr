@@ -2,7 +2,10 @@ Description
 ===========
 Install and configure Solr with additional Zookeeper support
 
-[![Install](https://raw.github.com/qubell-bazaar/component-skeleton/master/img/install.png)](https://staging.dev.qubell.com/applications/upload?metadataUrl=https://github.com/qubell-bazaar/component-solr-dev/raw/master/meta.yml)
+Version 0.1.0
+-------------
+
+[![Install](https://raw.github.com/qubell-bazaar/component-skeleton/master/img/install.png)](https://staging.dev.qubell.com/applications/upload?metadataUrl=https://raw.github.com/qubell-bazaar/component-solr-dev/0.1.0/meta.yml)
 
 Attributes
 ----------
