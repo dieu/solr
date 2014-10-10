@@ -26,7 +26,6 @@ Implementation notes
 --------------------
  - Installation is based on Chef recipes from ""
 
-
 Usage
 -----
 If you want enable Zookeeper support then `node['cookbook-qubell-solr']['zookeeper']['host']` should be set to zookeeper hosts IP.
