@@ -206,15 +206,12 @@ application:
                     retryCount: 0
                     staticIps: "{$.props.tomcat.app-hosts}"
               - reconfigure-tomcat: ### Reconfiguring Tomcat with new JAVA_OPTS for Solr installation 
-                  action: serviceCall
+                  action: tomcat.reconfigure
                   phase: reconfigure-tomcat
                   precedingPhases: [get-env-props]
                   parameters:
-                    timeout: 600
-                    service: tomcat
-                    command: reconfigure
-                    arguments:
-                      java-opts: "$${{JAVA_OPTS}} -DnumShards={$.solr-shards-num} -Dlog4j.configuration=file:///opt/solr/webapps/log4j.properties"
+                    commandCallTimeout: 10 minutes
+                    java-opts: "$${{JAVA_OPTS}} -DnumShards={$.solr-shards-num} -Dlog4j.configuration=file:///opt/solr/webapps/log4j.properties"
               - deploy-solr: ### Run recipe for extract Solr war
                   action: "chefrun"
                   phase: deploy-solr
@@ -254,40 +251,34 @@ application:
                   output:
                      chefAttrs1: chefState
               - deploy-libs: ### Deploy libs required for application
-                  action: serviceCall
+                  action: tomcat.deploy-libs
                   phase: deploy-libs
                   precedingPhases: [ deploy-solr ]
                   parameters:
-                    timeout: 600
-                    service: tomcat
-                    command: deploy-libs
-                    arguments:
-                      lib-uri: "{$.chefAttrs['*'][0]['cookbook-qubell-solr']['lib_uri']}"
+                    commandCallTimeout: 10 minutes
+                    lib-uri: "{$.chefAttrs['*'][0]['cookbook-qubell-solr']['lib_uri']}"
               - deploy-war: ### Deploy Solr war in Tomcat
-                  action: serviceCall
+                  action: tomcat.deploy-war
                   phase: deploy-war
                   precedingPhases: [ deploy-libs ]
                   parameters:
-                    timeout: 600
-                    service: tomcat
-                    command: deploy-war
-                    arguments:
-                      uri: "file://{$.chefAttrs['*'][0]['cookbook-qubell-solr']['war_uri']}"
-                      path: "/solr"
-                      context-attrs: {
-                        "docBase": "{$.chefAttrs['*'][0]['cookbook-qubell-solr']['war_uri']}",
-                        "debug": "5",
-                        "crossContext": "true",
-                        "privileged": "true",
-                        "allowLinking": "true"
-                      }
-                      context-nodes:
-                        - Environment: {
-                            "name": "solr/home",
-                            "type": "java.lang.String",
-                            "value": "/opt/solr/cores",
-                            "override": "true"
-                          }
+                    commandCallTimeout: 10 minutes
+                    uri: "file://{$.chefAttrs['*'][0]['cookbook-qubell-solr']['war_uri']}"
+                    path: "/solr"
+                    context-attrs: {
+                      "docBase": "{$.chefAttrs['*'][0]['cookbook-qubell-solr']['war_uri']}",
+                      "debug": "5",
+                      "crossContext": "true",
+                      "privileged": "true",
+                      "allowLinking": "true"
+                    }
+                    context-nodes:
+                      - Environment: {
+                          "name": "solr/home",
+                          "type": "java.lang.String",
+                          "value": "/opt/solr/cores",
+                          "override": "true"
+                        }
 
             return: ### We want to see DemoSite and AdminPanel urls will be present on application dashboard
               solr-node:
@@ -300,14 +291,11 @@ application:
           manage-collection: ### Additional workflow for changing collections  
             steps:
               - stop-service-tomcat:
-                  action: serviceCall
+                  action: tomcat.manage-service
                   phase: stop-service-tomcat
                   parameters:
-                    timeout: 600
-                    service: tomcat
-                    command: manage-service
-                    arguments:
-                      service-action: "stop"
+                    commandCallTimeout: 10 minutes
+                    service-action: "stop"
               - delete-collection:
                   action: "chefrun"
                   phase: "delete-collection"
@@ -335,12 +323,9 @@ application:
                         zookeeper:
                           hosts: "{$.props.zoo.zoo-nodes}"
               - start-service-tomcat:
-                  action: serviceCall
+                  action: tomcat.manage-service
                   phase: start-service-tomcat
                   precedingPhases: ["create-collections"]
                   parameters:
-                    timeout: 600
-                    service: tomcat
-                    command: manage-service
-                    arguments:
-                      service-action: "start"
+                    commandCallTimeout: 10 minutes
+                    service-action: "start"
