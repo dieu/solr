@@ -3,7 +3,7 @@ kit:
   link: https://github.com/qubell-bazaar/component-solr-dev 
   applications:
     - name: "Solr Cloud"
-      manifest: https://raw.github.com/qubell-bazaar/component-solr-dev/1.0-33p/component-solr-dev.yml
+      manifest: https://raw.github.com/qubell-bazaar/component-solr-dev/1.1-33p/component-solr-dev.yml
     - name: "Application Server"
       manifest: https://raw.github.com/qubell-bazaar/component-tomcat-dev/0.3.0/component-tomcat-dev.yml
     - name: "Zookeeper"
