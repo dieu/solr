@@ -290,8 +290,14 @@ application:
 
           manage-collection: ### Additional workflow for changing collections  
             steps:
+              - get-env-props: ### After getting signals on all required interfaces we want to used them later 
+                  action: getEnvironmentProperties
+                  phase: get-env-props
+                  output:
+                    props: result
               - stop-service-tomcat:
                   action: tomcat.manage-service
+                  precedingPhases: ["get-env-props"]
                   phase: stop-service-tomcat
                   parameters:
                     commandCallTimeout: 10 minutes
