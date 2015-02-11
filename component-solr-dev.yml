@@ -8,7 +8,7 @@ application:
     configuration.solr-loglevel: "FINE" ### Solr log level
     configuration.solr-zookeeper-loglevel: "INFO"
     configuration.clusterSize: 4 ### Solr hosts numbers. 4 hosts used for 2-shard configration
-    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-84bcbf5.tar.gz" 
+    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-548f8ef.tar.gz" 
     configuration.app-port: 8080
     compute-config.hardwareId: "m1.small" ###EC2  Instance type
     compute-config.imageId: "ami-246ed34c"
