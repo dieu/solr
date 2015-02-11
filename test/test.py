@@ -41,7 +41,7 @@ from qubell.api.testing import *
 })
 class SolrDevTestCase(BaseComponentTestCase):
     name = "component-solr-dev"
-    meta = "https://raw.githubusercontent.com/qubell-bazaar/component-solr-dev/master/meta.yml"
+    meta = os.path.realpath(os.path.join(os.path.dirname(__file__), '../meta.yml')) 
     apps = [{
         "name": name,
         "file": os.path.realpath(os.path.join(os.path.dirname(__file__), '../%s.yml' % name))
@@ -60,7 +60,7 @@ class SolrDevTestCase(BaseComponentTestCase):
     
     @instance(byApplication=name)
     def test_solr_hosts(self, instance):
-        hosts = instance.returnValues['solr-zoo.solr-url']
+        hosts = instance.returnValues['solr-zoo.solr-urls']
         for host in hosts:
            resp = requests.get(host, verify=False)
            assert resp.status_code == 200 
