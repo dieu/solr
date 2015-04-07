@@ -2,7 +2,7 @@ site :opscode
 
 cookbook 'file', git: "https://github.com/jenssegers/chef-filehelper.git", ref: "050c555"
 cookbook 'java', git: "https://github.com/opscode-cookbooks/java.git", ref: "7b559d6509c32cb250571250a2484dba2a9d5e49"
-cookbook 'cookbook-qubell-tomcat', git: "https://github.com/qubell-bazaar/cookbook-qubell-tomcat.git"
+cookbook 'cookbook-qubell-tomcat', git: "https://github.com/qubell-bazaar/cookbook-qubell-tomcat.git", ref: "v1.0.0"
 cookbook 'cookbook-qubell-zookeeper', git: "https://github.com/qubell-bazaar/cookbook-qubell-zookeeper.git"
 cookbook 'cookbook-qubell-solr', git: "https://github.com/qubell-bazaar/cookbook-qubell-solr.git"
 

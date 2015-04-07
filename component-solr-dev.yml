@@ -8,7 +8,7 @@ application:
     configuration.solr-loglevel: "FINE" ### Solr log level
     configuration.solr-zookeeper-loglevel: "INFO"
     configuration.clusterSize: 4 ### Solr hosts numbers. 4 hosts used for 2-shard configration
-    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-84bcbf5.tar.gz" 
+    configuration.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-548f8ef.tar.gz" 
     configuration.app-port: 8080
     compute-config.hardwareId: "m1.small" ###EC2  Instance type
     compute-config.imageId: "ami-246ed34c"
@@ -20,7 +20,6 @@ application:
 # will be connected by pin names regardless of interface name
 
   bindings:
-    - [ClusterCommander, cluster]
     - [ClusterHarvester, cluster.tomcat]
     - [cluster.solr, zookeeper]
 
@@ -31,14 +30,13 @@ application:
   interfaces:
     configuration:  ###Input values .That values can be changed after application launch.
       "*": "bind(cluster.solr#input.*)"
-      clusterSize: "bind(ClusterCommander#input.clusterSize, ClusterHarvester#input.clusterSize)"
+      clusterSize: "bind(cluster#configuration.quantity, ClusterHarvester#input.clusterSize)"
       app-port: "bind(cluster.tomcat#configuration.app-port)"
     compute-config:
       "*": "bind(cluster.tomcat#compute-config.*, zookeeper#compute-config.*)"
     app-meta:
       application-pic: "bind(metadata#output.application-pic)"
     solr-zoo: ### combined interface for actions/output pins
-      solr-node: "bind(ClusterHarvester#result.app-hosts)"
       solr-urls: "bind(ClusterHarvester#result.app-uris)"
       solr-zoo-nodes: "bind(zookeeper#zoo.zoo-urls)"
       zoo-ui: "bind(zookeeper#zoo.zoo-ui)"
@@ -59,26 +57,6 @@ application:
             large: "https://s3.amazonaws.com/qubell-images/solr.png"
             small: "https://s3.amazonaws.com/qubell-images/solr.png"
             small-height: 101
- 
-    ClusterCommander:
-      type: workflow.Instance
-      interfaces:
-        input:
-          clusterSize: configuration(int)
-        scaler:
-          set-quantity: send-command(int quantity)
-      configuration:
-        configuration.triggers:
-          input.clusterSize: update
-        configuration.propagateStatus: [ update ]
-        configuration.workflows:
-          update: &update 
-            steps:
-              - scale:
-                  action: scaler.set-quantity
-                  parameters:
-                    quantity: "{$.clusterSize}"
-          launch: *update
 
     ClusterHarvester:
       type: workflow.Instance
@@ -88,20 +66,19 @@ application:
           harvester-pic: configuration(map<string, object>)
         tomcat:
           app-uri:
-             type: consume-signal(string)
+             type: consume-signal(list<string>)
              name: Solr url
-          app-host:
-             type: consume-signal(string)
-             name: Solr host
         result:
           app-uris:  publish-signal(list<string>)
-          app-hosts: publish-signal(list<string>)
       required: [tomcat]
       configuration:
+        configuration.triggers:
+          tomcat.app-uri: update
+        configuration.propagateStatus: [update]
         input.harvester-pic:
             large: "https://dl.dropboxusercontent.com/u/250836/component-harvester.gif"
         configuration.workflows:
-          launch:
+          update: &update
             steps:
               - waitPeers:
                    action: waitPeers
@@ -118,9 +95,8 @@ application:
                   output:
                     signals: result
             return:
-              app-uris:      { value: "http://{$.signals.tomcat.*.app-uri}/solr" }
-              app-hosts:     { value: "{$.signals.tomcat.*.app-host}"}
-
+              app-uris:   { value: "{$.signals.tomcat..app-uri}" }
+          launch: *update       
     cluster:
       type: composite.Scaler
       bindings:
@@ -156,7 +132,7 @@ application:
                  type: publish-signal(int)
                  name: Application port
               app-uri: 
-                 type: publish-signal(string)
+                 type: publish-signal(list<string>)
             source:
               java-opts:     consume-signal(string)
               lib-uri:       consume-signal(list<string>)
