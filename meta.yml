@@ -3,17 +3,17 @@ kit:
   link: https://github.com/qubell-bazaar/component-solr-dev 
   applications:
     - name: "Solr Cloud"
-      manifest: https://raw.github.com/qubell-bazaar/component-solr-dev/1.1-33p/component-solr-dev.yml
+      manifest: https://raw.github.com/qubell-bazaar/component-solr-dev/gce/component-solr-dev.yml
     - name: "Application Server"
-      manifest: https://raw.github.com/qubell-bazaar/component-tomcat-dev/1.0-33p/component-tomcat-dev.yml
+      manifest: https://raw.github.com/qubell-bazaar/component-tomcat-dev/gce/component-tomcat-dev.yml
     - name: "Zookeeper"
-      manifest: https://raw.github.com/qubell-bazaar/component-zookeeper-dev/1.0-33p/component-zookeeper-dev.yml 
+      manifest: https://raw.github.com/qubell-bazaar/component-zookeeper-dev/gce/component-zookeeper-dev.yml 
   provider:
     name: "Qubell"
     link: http://qubell.com
   documentation:
     overview: |
       This application requires the following items to be configured in your environment:
-        * Amazon EC2 or Rackspace CloudServers account;
+        * Amazon EC2 or Rackspace CloudServers or GCE account;
         * Ports 2181, 3888, 8090, 8080 open on the ﬁrewall.
       Please refer to the Getting Started for step-by-step instructions on how to configure your environment.

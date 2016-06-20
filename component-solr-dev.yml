@@ -12,8 +12,8 @@ application:
     input.solr-quantity: 4 ### Solr hosts numbers. 4 hosts used for 2-shard configration
     input.zookeeper-quantity: 3 ### Zookkeper hosts quantity
     input.recipe-url: "https://s3.amazonaws.com/qubell-starter-kit-artifacts/qubell-bazaar/component-solr-dev-cookbooks-stable-55849ff.tar.gz" 
-    input.operating-system: {image: "us-east-1/ami-1ba18d72", identity: ec2-user} ### image/identity pair for describing Operating system for the instance
-    input.instance-size: "m1.small" ### EC2 instance type
+    input.operating-system: {image: "ubuntu-1204-precise-v20160516", identity: gce-user} ### image/identity pair for describing Operating system for the instance
+    input.instance-size: "g1-small" ### EC2 instance type
 
 # Binding section.
 # Here we are bind main.workflow component on sumbmodules.
@@ -65,11 +65,6 @@ application:
         input:
           operating-system:
              type: configuration(map<string,object>)
-             suggestions:
-                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
-                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
-                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
-                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
           app-port:
              type: configuration(int)
              name: Tomcat listen port
@@ -125,11 +120,6 @@ application:
         input: #### Contain pins with type: configuration().
           operating-system:
              type: configuration(map<string,object>)
-             suggestions: ### Create dropdown menu in advanced launch
-                 "centos": {image: "us-east-1/ami-bf5021d6", identity: root}
-                 "amazon": {image: "us-east-1/ami-1ba18d72", identity: ec2-user}
-                 "ubuntu1204": {image: "us-east-1/ami-967edcff", identity: ubuntu}
-                 "ubuntu1004": {image: "us-east-1/ami-9f3906f6", identity: ubuntu}
           solr-version:
              type: configuration(string)
              name: Solr version
